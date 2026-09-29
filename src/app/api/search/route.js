@@ -12,10 +12,10 @@ const adminSupabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// Use OpenAI client for Groq
+// Use OpenAI client pointed at NVIDIA NIM (free tier) instead of Groq
 const groq = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY,
-  baseURL: "https://api.groq.com/openai/v1",
+  apiKey: process.env.NVIDIA_API_KEY,
+  baseURL: "https://integrate.api.nvidia.com/v1",
 });
 
 // 3. Send payload to Supabase table
@@ -61,7 +61,7 @@ async function generateCompletion(messages, modelName) {
   } else {
     // Use Groq
     return await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "z-ai/glm-5.3-flash",
       messages: messages,
     });
   }
@@ -101,7 +101,7 @@ async function generatePrompts(documents) {
   } else {
     // Use Groq
     const gptResponse = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "z-ai/glm-5.3-flash",
       messages: messages,
       response_format: { type: "json_object" },
     });
@@ -288,7 +288,7 @@ export async function POST(req) {
                 Retrieved documents: ${JSON.stringify(cleanedSources)}`,
               },
             ],
-            model: "llama-3.3-70b-versatile",
+            model: "z-ai/glm-5.3-flash",
             temperature: 0.5,
             max_tokens: 1024,
             top_p: 1,
